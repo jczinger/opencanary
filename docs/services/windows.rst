@@ -13,40 +13,38 @@ Inside ~/.opencanary.conf:
        "smb.enabled": true
    }
 
-Below is an example of an `smb.conf` for a Samba installation, 
+Below is an example of an `smb.conf` for a Samba installation,
 
 .. code-block:: dosini
 
-    [global]
-       workgroup = WORKGROUP
-       server string = blah
-       netbios name = SRV01
-       dns proxy = no
-       log file = /var/log/samba/log.all
-       log level = 0
-       vfs object = full_audit
-       full_audit:prefix = %U|%I|%i|%m|%S|%L|%R|%a|%T|%D
-       full_audit:success = pread
-       full_audit:failure = none
-       full_audit:facility = local7
-       full_audit:priority = notice
-       max log size = 100
-       panic action = /usr/share/samba/panic-action %d
-       #samba 4
-       server role = standalone server
-       #samba 3
-       #security = user
-       passdb backend = tdbsam
-       obey pam restrictions = yes
-       unix password sync = no
-       map to guest = bad user
-       usershare allow guests = yes
-    [myshare]
-       comment = All the stuff!
-       path = /home/demo/share
-       guest ok = yes
-       read only = yes
-       browseable = yes
+        [global]
+            workgroup = WORKGROUP
+            server string = NBDocs
+            netbios name = SRV01
+            dns proxy = no
+            log file = /var/log/samba/log.all
+            log level = 0
+            max log size = 100
+            panic action = /usr/share/samba/panic-action %d
+            server role = standalone
+            passdb backend = tdbsam
+            obey pam restrictions = yes
+            unix password sync = no
+            map to guest = bad user
+            usershare allow guests = yes
+            load printers = no
+            vfs object = full_audit
+            full_audit:prefix = %U|%I|%i|%m|%S|%L|%R|%a|%T|%D
+            full_audit:success = flistxattr
+            full_audit:failure = none
+            full_audit:facility = local7
+            full_audit:priority = notice
+        [myshare]
+            comment = All the stuff!
+            path = /samba
+            guest ok = yes
+            read only = yes
+            browseable = yes
 
 Please note that there are some details in the above config that you would want to change,
 
@@ -67,6 +65,6 @@ to use rsyslog, we will edit the `/etc/rsyslog.conf` file. Below are two lines w
     local7.*            /var/log/samba-audit.log
 
 This will redirect any message of facility local7 to your `/var/log/samba-audit.log` file, which will be
-watched by our OpenCanary daemon. 
+watched by our OpenCanary daemon.
 
-Please note this is all written up in the GitHub README.md
+Please note this is all written up in the GitHub Wiki.

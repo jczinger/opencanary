@@ -348,7 +348,6 @@ class RedisProtocol(Protocol):
             return array, curr_ptr
 
         def _parseRESPString(cmd_string):
-
             if cmd_string[0] != "$":
                 raise ProtocolError("expected '$', got '{c}'".format(c=cmd_string[0]))
 
@@ -418,13 +417,13 @@ class RedisProtocol(Protocol):
 
                 cmds = self._processRedisCommand()
 
-                for (cmd, args) in cmds:
+                for cmd, args in cmds:
                     self._buildResponseAndSend(cmd, args)
 
             except RedisCommandAgain:
                 pass
 
-        except (ProtocolError) as e:
+        except ProtocolError as e:
             self._errorAndClose(e.message)
             return
 
@@ -439,9 +438,10 @@ class CanaryRedis(Factory, CanaryService):
 
     def __init__(self, config=None, logger=None):
         CanaryService.__init__(self, config=config, logger=logger)
+        self.listen_addr = config.getVal("device.listen_addr", default="")
         self.port = config.getVal("redis.port", default=6379)
         self.max_arg_length = config.getVal("redis.max_arg_length", default=30)
         self.logtype = logger.LOG_REDIS_COMMAND
 
     def getService(self):
-        return internet.TCPServer(self.port, self)
+        return internet.TCPServer(self.port, self, interface=self.listen_addr)
